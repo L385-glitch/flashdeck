@@ -95,13 +95,44 @@
     window.location.hash = '#/decks';
   }
 
-  function onFile(e) {
-    const file = e.target.files?.[0];
+  let fileInput;
+  let dragActive = $state(false);
+
+  function readFile(file) {
     if (!file) return;
+    if (!/\.csv$/i.test(file.name) && file.type !== 'text/csv') {
+      error = 'Please choose a .csv file';
+      return;
+    }
+    error = '';
     importName = file.name;
     const reader = new FileReader();
     reader.onload = () => (importText = String(reader.result));
     reader.readAsText(file);
+  }
+
+  function onFile(e) {
+    readFile(e.target.files?.[0]);
+    e.target.value = '';
+  }
+
+  function chooseFile() {
+    fileInput?.click();
+  }
+
+  function onDrop(e) {
+    e.preventDefault();
+    dragActive = false;
+    readFile(e.dataTransfer?.files?.[0]);
+  }
+
+  function onDragOver(e) {
+    e.preventDefault();
+    dragActive = true;
+  }
+
+  function onDragLeave() {
+    dragActive = false;
   }
 
   async function doImport() {
@@ -191,13 +222,27 @@
     {/if}
 
     {#if showImport}
-      <div class="card p-4 space-y-3">
+      <div
+        class="card p-4 space-y-3"
+        ondrop={onDrop}
+        ondragover={onDragOver}
+        ondragleave={onDragLeave}
+      >
         <p class="text-sm font-medium text-zinc-300">Import CSV</p>
         <p class="text-xs text-zinc-500">Columns: <code class="text-zinc-400">front,back,extra,tags</code>. A header row is skipped automatically.</p>
-        <label class="btn btn-ghost w-full cursor-pointer">
-          <Icon name="upload" cls="w-4 h-4" />{importName || 'Choose a .csv file…'}
-          <input type="file" accept=".csv,text/csv" class="hidden" onchange={onFile} />
-        </label>
+
+        <div
+          class="rounded-lg border-2 border-dashed p-5 text-center transition-colors {dragActive ? 'border-indigo-500 bg-indigo-500/10' : 'border-zinc-700'}"
+        >
+          <p class="text-sm {dragActive ? 'text-indigo-300' : 'text-zinc-400'}">
+            {dragActive ? 'Drop the file here' : 'Drag & drop your .csv here, or'}
+          </p>
+          <button class="btn btn-primary mt-2" onclick={chooseFile}>
+            <Icon name="upload" cls="w-4 h-4" />{importName || 'Choose a .csv file…'}
+          </button>
+          <input type="file" accept=".csv,text/csv" class="hidden" bind:this={fileInput} onchange={onFile} />
+        </div>
+
         <div class="flex items-center gap-4 text-sm">
           <label class="flex items-center gap-1.5 text-zinc-300">
             <input type="radio" value="append" bind:group={importMode} />Append
