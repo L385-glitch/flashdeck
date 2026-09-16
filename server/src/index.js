@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import registerRoutes from './routes/index.js';
 
-const PORT = Number(process.env.PORT || 3000);
+const PORT = Number(process.env.PORT || 7373);
 const HOST = process.env.HOST || '0.0.0.0';
 
 const app = Fastify({

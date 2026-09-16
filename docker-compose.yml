@@ -3,8 +3,8 @@ services:
     build: .
     container_name: flashdeck
     ports:
-      # Reach via <truenas-tailscale-ip>:3000
-      - "3000:3000"
+      # Reach via <truenas-tailscale-ip>:7373 (daydeck uses 3000)
+      - "7373:7373"
     environment:
       - TZ=Europe/Vienna            # adjust to your timezone (cosmetic, logs only)
     volumes:

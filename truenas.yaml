@@ -29,7 +29,8 @@ services:
   flashdeck:
     image: ghcr.io/l385-glitch/flashdeck:b9667ed3ebc62c95e8e1cf527e2d205b17586a53
     ports:
-      - "3000:3000"
+      # daydeck already uses host port 3000, so flashdeck runs on 7373
+      - "7373:7373"
     environment:
       - TZ=Europe/Vienna
     volumes:
