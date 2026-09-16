@@ -1,5 +1,5 @@
 import { db } from '../db.js';
-import { nowIso } from './helpers.js';
+import { nowIso, parseImage, shapeCard } from './helpers.js';
 
 const PATCH_SCHEMA = [
   { col: 'front', cast: (v) => String(v || '').trim() || null },
@@ -17,16 +17,27 @@ function sanitize(body) {
     back: String(body?.back ?? ''),
     extra: String(body?.extra ?? ''),
     tags: String(body?.tags ?? '').trim(),
+    image: parseImage(body?.image),
   };
 }
 
 export default async function (app) {
   app.get('/api/cards', (req) => {
     const { deck_id } = req.query;
-    if (deck_id) {
-      return db.prepare('SELECT * FROM cards WHERE deck_id = ? ORDER BY position ASC, id ASC').all(Number(deck_id));
-    }
-    return db.prepare('SELECT * FROM cards ORDER BY position ASC, id ASC').all();
+    const rows = deck_id
+      ? db.prepare('SELECT * FROM cards WHERE deck_id = ? ORDER BY position ASC, id ASC').all(Number(deck_id))
+      : db.prepare('SELECT * FROM cards ORDER BY position ASC, id ASC').all();
+    return rows.map(shapeCard);
+  });
+
+  // Serve a card's stored image.
+  app.get('/api/cards/:id/image', (req, reply) => {
+    const row = db.prepare('SELECT image, image_mime FROM cards WHERE id = ?').get(Number(req.params.id));
+    if (!row || !row.image) return reply.code(404).send({ error: 'no image' });
+    reply
+      .type(row.image_mime || 'image/jpeg')
+      .header('Cache-Control', 'public, max-age=31536000, immutable')
+      .send(row.image);
   });
 
   app.post('/api/cards', (req, reply) => {
@@ -36,9 +47,9 @@ export default async function (app) {
     const deck = db.prepare('SELECT id FROM decks WHERE id = ?').get(c.deck_id);
     if (!deck) return reply.code(404).send({ error: 'deck not found' });
     const r = db
-      .prepare('INSERT INTO cards (deck_id, front, back, extra, tags) VALUES (?, ?, ?, ?, ?)')
-      .run(c.deck_id, c.front, c.back, c.extra, c.tags);
-    return db.prepare('SELECT * FROM cards WHERE id = ?').get(r.lastInsertRowid);
+      .prepare('INSERT INTO cards (deck_id, front, back, extra, tags, image, image_mime) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run(c.deck_id, c.front, c.back, c.extra, c.tags, c.image ? c.image.buffer : null, c.image ? c.image.mime : null);
+    return shapeCard(db.prepare('SELECT * FROM cards WHERE id = ?').get(r.lastInsertRowid));
   });
 
   app.patch('/api/cards/:id', (req, reply) => {
@@ -54,11 +65,17 @@ export default async function (app) {
         fields[col] = v;
       }
     }
+    // Image is handled separately: a data URI sets it, null/'' clears it.
+    if ('image' in body) {
+      const img = parseImage(body.image);
+      fields.image = img ? img.buffer : null;
+      fields.image_mime = img ? img.mime : null;
+    }
     if (!Object.keys(fields).length) return reply.code(400).send({ error: 'nothing to update' });
     fields.updated_at = nowIso();
     const set = Object.keys(fields).map((k) => `${k} = ?`).join(', ');
     db.prepare(`UPDATE cards SET ${set} WHERE id = ?`).run(...Object.values(fields), id);
-    return db.prepare('SELECT * FROM cards WHERE id = ?').get(id);
+    return shapeCard(db.prepare('SELECT * FROM cards WHERE id = ?').get(id));
   });
 
   app.delete('/api/cards/:id', (req, reply) => {

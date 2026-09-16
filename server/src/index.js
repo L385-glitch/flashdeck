@@ -10,6 +10,8 @@ const HOST = process.env.HOST || '0.0.0.0';
 
 const app = Fastify({
   logger: { level: process.env.LOG_LEVEL || 'info' },
+  // CSVs can embed base64 images, so allow large request bodies.
+  bodyLimit: 100 * 1024 * 1024,
 });
 app.setErrorHandler((err, req, reply) => {
   req.log.error(err);

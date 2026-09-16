@@ -1,5 +1,5 @@
 import { db } from '../db.js';
-import { nowIso, clampInt } from './helpers.js';
+import { nowIso, clampInt, shapeCard } from './helpers.js';
 import { schedule } from '../lib/srs.js';
 
 const RATINGS = [0, 1, 2, 3];
@@ -13,9 +13,10 @@ export default async function (app) {
     if (deck_id) {
       return db
         .prepare('SELECT * FROM cards WHERE deck_id = ? AND due <= ? ORDER BY due ASC, id ASC LIMIT ?')
-        .all(Number(deck_id), now, limit);
+        .all(Number(deck_id), now, limit)
+        .map(shapeCard);
     }
-    return db.prepare('SELECT * FROM cards WHERE due <= ? ORDER BY due ASC, id ASC LIMIT ?').all(now, limit);
+    return db.prepare('SELECT * FROM cards WHERE due <= ? ORDER BY due ASC, id ASC LIMIT ?').all(now, limit).map(shapeCard);
   });
 
   app.post('/api/study/review', (req, reply) => {
@@ -36,6 +37,6 @@ export default async function (app) {
       'INSERT INTO reviews (card_id, rating, interval_before, interval_after, reviewed_at) VALUES (?, ?, ?, ?, ?)'
     ).run(cardId, rating, card.interval, next.interval, now);
 
-    return db.prepare('SELECT * FROM cards WHERE id = ?').get(cardId);
+    return shapeCard(db.prepare('SELECT * FROM cards WHERE id = ?').get(cardId));
   });
 }

@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS cards (
   back          TEXT NOT NULL DEFAULT '',
   extra         TEXT NOT NULL DEFAULT '',
   tags          TEXT NOT NULL DEFAULT '',
+  image         BLOB,
+  image_mime    TEXT,
   ease          REAL NOT NULL DEFAULT 2.5,
   interval      REAL NOT NULL DEFAULT 0,
   reps          INTEGER NOT NULL DEFAULT 0,
@@ -56,6 +58,11 @@ CREATE INDEX IF NOT EXISTS idx_cards_deck   ON cards(deck_id);
 CREATE INDEX IF NOT EXISTS idx_cards_due    ON cards(due);
 CREATE INDEX IF NOT EXISTS idx_reviews_card ON reviews(card_id, reviewed_at);
 `);
+
+// Lightweight migration for databases created before image support existed.
+const cardCols = new Set(db.prepare('PRAGMA table_info(cards)').all().map((c) => c.name));
+if (!cardCols.has('image')) db.exec('ALTER TABLE cards ADD COLUMN image BLOB');
+if (!cardCols.has('image_mime')) db.exec('ALTER TABLE cards ADD COLUMN image_mime TEXT');
 
 export const DECK_COLORS = [
   '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#0ea5e9', '#a855f7',

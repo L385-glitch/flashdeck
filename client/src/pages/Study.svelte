@@ -102,6 +102,15 @@
             {/each}
           </div>
         {/if}
+        {#if current.has_image}
+          <div class="mb-3 flex justify-center">
+            <img
+              src={current.image_url}
+              alt=""
+              class="max-h-[260px] max-w-full rounded-lg object-contain ring-1 ring-zinc-800"
+            />
+          </div>
+        {/if}
         <p class="text-lg text-zinc-100 leading-relaxed flex-1">{current.front}</p>
 
         {#if revealed}
