@@ -1,0 +1,12 @@
+services:
+  flashdeck:
+    build: .
+    container_name: flashdeck
+    ports:
+      # Reach via <truenas-tailscale-ip>:3000
+      - "3000:3000"
+    environment:
+      - TZ=Europe/Vienna            # adjust to your timezone (cosmetic, logs only)
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

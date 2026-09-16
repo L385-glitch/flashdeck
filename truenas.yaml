@@ -1,0 +1,38 @@
+# Flashdeck for TrueNAS Scale "Apps" (Add -> Install via YAML)
+#
+# One-time setup:
+#   1. TrueNAS UI: Apps -> Discover -> (three dots) -> Install via YAML
+#   2. App name: flashdeck
+#   3. Paste everything below into the YAML editor, click Deploy
+#
+# Updating (important):
+#   The "image:" line below is pinned to a SPECIFIC build (a long hash),
+#   NOT ":latest". This is deliberate. TrueNAS's Update button re-runs the
+#   same YAML, and with ":latest" Docker keeps the image it already
+#   downloaded - so you would never actually get a new version. A pinned
+#   build is never in the local cache, so it is always downloaded fresh.
+#
+#   To update to a new version:
+#     a) I (the assistant) send you a new image tag (a long hash).
+#     b) Replace the tag on the "image:" line below with it.
+#     c) In TrueNAS: Apps -> flashdeck -> (three dots) -> Update
+#        (or delete it WITH "remove images", then Install via YAML again).
+#     d) Hard-refresh the app page in your browser (Ctrl+Shift+R) - the
+#        browser otherwise keeps showing the old interface.
+#
+# NOTE: the GHCR package must stay PUBLIC (TrueNAS pulls it anonymously -
+# this YAML format has no place for registry credentials). If it ever gets
+# set back to private, re-open
+# https://github.com/packages/container/flashdeck
+# and set visibility to Public.
+services:
+  flashdeck:
+    image: ghcr.io/l385-glitch/flashdeck:REPLACE_WITH_BUILD_SHA
+    ports:
+      - "3000:3000"
+    environment:
+      - TZ=Europe/Vienna
+    volumes:
+      # Your flashcard data lives here - do not delete this folder
+      - /mnt/pool1/Apps/flashdeck/data:/data
+    restart: unless-stopped

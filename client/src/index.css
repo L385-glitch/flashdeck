@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --dd-zinc-950: #09090b;
+  --dd-zinc-900: #18181b;
+  --dd-zinc-800: #27272a;
+  --dd-zinc-700: #3f3f46;
+  --dd-zinc-600: #52525b;
+  --dd-zinc-500: #71717a;
+  --dd-zinc-400: #a1a1aa;
+  --dd-zinc-300: #d4d4d8;
+  --dd-zinc-200: #e4e4e7;
+  --dd-zinc-100: #f4f4f5;
+  --dd-indigo-500: #6366f1;
+  --dd-indigo-400: #818cf8;
+  --dd-indigo-300: #a5b4fc;
+  --dd-rose-500: #f43f5e;
+  --dd-rose-400: #fb7185;
+  --dd-rose-300: #fda4af;
+  --dd-emerald-500: #10b981;
+  --dd-emerald-400: #34d399;
+  --dd-emerald-300: #6ee7b7;
+  --dd-amber-500: #f59e0b;
+  --dd-amber-400: #fbbf24;
+  --dd-amber-300: #fcd34d;
+  --dd-sky-500: #0ea5e9;
+  --dd-sky-400: #38bdf8;
+  --dd-sky-300: #7dd3fc;
+}
+
+.light {
+  color-scheme: light;
+  --dd-zinc-950: #ffffff;
+  --dd-zinc-900: #ffffff;
+  --dd-zinc-800: #e4e4e7;
+  --dd-zinc-700: #d4d4d8;
+  --dd-zinc-600: #52525b;
+  --dd-zinc-500: #71717a;
+  --dd-zinc-400: #52525b;
+  --dd-zinc-300: #3f3f46;
+  --dd-zinc-200: #18181b;
+  --dd-zinc-100: #09090b;
+  --dd-indigo-500: #4f46e5;
+  --dd-indigo-400: #4338ca;
+  --dd-indigo-300: #4338ca;
+  --dd-rose-500: #e11d48;
+  --dd-rose-400: #e11d48;
+  --dd-rose-300: #e11d48;
+  --dd-emerald-500: #059669;
+  --dd-emerald-400: #059669;
+  --dd-emerald-300: #047857;
+  --dd-amber-500: #d97706;
+  --dd-amber-400: #d97706;
+  --dd-amber-300: #b45309;
+  --dd-sky-500: #0284c7;
+  --dd-sky-400: #0284c7;
+  --dd-sky-300: #0369a1;
+}
+
+@theme inline {
+  --color-zinc-950: var(--dd-zinc-950);
+  --color-zinc-900: var(--dd-zinc-900);
+  --color-zinc-800: var(--dd-zinc-800);
+  --color-zinc-700: var(--dd-zinc-700);
+  --color-zinc-600: var(--dd-zinc-600);
+  --color-zinc-500: var(--dd-zinc-500);
+  --color-zinc-400: var(--dd-zinc-400);
+  --color-zinc-300: var(--dd-zinc-300);
+  --color-zinc-200: var(--dd-zinc-200);
+  --color-zinc-100: var(--dd-zinc-100);
+  --color-indigo-500: var(--dd-indigo-500);
+  --color-indigo-400: var(--dd-indigo-400);
+  --color-indigo-300: var(--dd-indigo-300);
+  --color-rose-500: var(--dd-rose-500);
+  --color-rose-400: var(--dd-rose-400);
+  --color-rose-300: var(--dd-rose-300);
+  --color-emerald-500: var(--dd-emerald-500);
+  --color-emerald-400: var(--dd-emerald-400);
+  --color-emerald-300: var(--dd-emerald-300);
+  --color-amber-500: var(--dd-amber-500);
+  --color-amber-400: var(--dd-amber-400);
+  --color-amber-300: var(--dd-amber-300);
+  --color-sky-500: var(--dd-sky-500);
+  --color-sky-400: var(--dd-sky-400);
+  --color-sky-300: var(--dd-sky-300);
+}
+
+/* Phone view: allow scrolling, but no pinch/double-tap zoom */
+html {
+  touch-action: pan-x pan-y;
+}
+
+body {
+  @apply bg-zinc-950 text-zinc-200 antialiased;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+::selection {
+  @apply bg-indigo-500/40;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme(--color-zinc-700) transparent;
+}
+
+.card {
+  @apply bg-zinc-900/70 ring-1 ring-zinc-800/80 rounded-2xl;
+}
+
+.input {
+  @apply bg-zinc-900 ring-1 ring-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 outline-none focus:ring-indigo-500/60 transition-shadow;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer;
+}
+
+.btn-primary {
+  @apply bg-indigo-500 hover:bg-indigo-400 text-white;
+}
+
+.btn-ghost {
+  @apply text-zinc-300 hover:bg-zinc-800/70 ring-1 ring-transparent hover:ring-zinc-700/60;
+}
+
+.btn-danger {
+  @apply text-rose-300 hover:bg-rose-500/10 ring-1 ring-transparent hover:ring-rose-500/30;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium ring-1;
+}
