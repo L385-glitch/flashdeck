@@ -27,7 +27,7 @@
 # and set visibility to Public.
 services:
   flashdeck:
-    image: ghcr.io/l385-glitch/flashdeck:ead79abbf73c3927d6018669f5db03d65773b116
+    image: ghcr.io/l385-glitch/flashdeck:6ed5d7a8f70d8664b04cc6b05f4b6e964b198469
     ports:
       # daydeck already uses host port 3000, so flashdeck runs on 7373
       - "7373:7373"
